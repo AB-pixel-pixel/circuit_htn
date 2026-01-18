@@ -13,6 +13,7 @@ from demonstrations_to_graph_v2 import *
 from subprocess import check_call
 import pydot
 import os, sys
+import shutil
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 #from simulator.simulator import *
 #from simulator.chair_assembly_simulator.chair_simulator import *
@@ -20,7 +21,6 @@ from simulator.table_setting_simulator.table_setting_simulator import *
 from simulator.drill_assembly_simulator.drill_assembly_simulator import *
 from os import listdir
 from os.path import isfile, join
-from graphviz import *
 from copy import deepcopy
 from restructure_graph import *
 
@@ -86,8 +86,13 @@ def drill_demonstrations_to_htn(demos):
     return generate_action_graphs_from_demonstrations(paths)
 
 
+from tqdm import tqdm
+
 def action_graph_to_htn(action_graph):
     htn_graph = create_init_htn_graph(action_graph)
+    node_start = None
+    node_terminate = None
+    
     for action in htn_graph.nodes:
         action_name = action.get_name()
         if action_name.find('init_action') != -1:
@@ -96,19 +101,64 @@ def action_graph_to_htn(action_graph):
             node_terminate = action
 
     start_time = time.time()
+    
+    initial_nodes = len(list(htn_graph.nodes))
+    print(f"开始 HTN 规约，初始节点数: {initial_nodes}")
+    pbar = tqdm(total=initial_nodes, desc="Reducing HTN", unit="nodes")
+    
+    # Track previous count to update pbar correctly
+    last_node_count = initial_nodes
+
     while len(list(htn_graph.nodes)) > 1:
         prev_node_count = len(list(htn_graph.nodes))
+        
+        # Update progress bar
+        reduced = last_node_count - prev_node_count
+        if reduced > 0:
+            pbar.update(reduced)
+        last_node_count = prev_node_count
+        
         combined_htns_in_parallel, htn1, htn2 = check_and_combine_htns_in_parallel(htn_graph)
         combined_htns_in_series, htn3, htn4 = check_and_combine_htns_in_series(htn_graph)
         
         if not(combined_htns_in_series or combined_htns_in_parallel):
             restructure_htn_graph(htn_graph, node_start, node_terminate)
 
-        if time.time() - start_time > 30:
-            return -1, False
+        # Removed timeout check for large datasets
+        # if time.time() - start_time > 30:
+        #    return -1, False
+        
+        # New Logic: Stop if we are stuck (no reduction happened this round)
+        curr_node_count = len(list(htn_graph.nodes))
+        if curr_node_count == prev_node_count:
+            # Check if restructure actually changed anything?
+            # If not, we are stuck.
+            # To be safe, if node count didn't decrease and no combination happened, we break.
+            pbar.write(f"Reduction stalled at {curr_node_count} nodes. Treating remaining nodes as parallel choices.")
+            break
+            
+    # Final update
+    final_reduced = last_node_count - len(list(htn_graph.nodes))
+    if final_reduced > 0:
+        pbar.update(final_reduced)
+    pbar.close()
 
-    # if len(list(htn_graph.nodes)) == 1:
-        # print("HTN Created")
+    nodes = list(htn_graph.nodes)
+    if len(nodes) > 1:
+        # Create a root ChoiceNode that combines all remaining nodes
+        # Assuming init_state and term_state can be generic or derived from first node
+        root = ChoiceNode("Root_Choice_Forest", "init_state", "term_state")
+        # Add all remaining nodes as children
+        # Note: We treat them as equally probable for now, or could weight by their own subtree size
+        # Since add_children expects a list of nodes, we pass them all.
+        # However, check_and_combine logic might have left some edges? 
+        # If we just group them, we might lose top-level edges.
+        # But if reduction stalled, it usually means we have disjoint paths or complex cycles.
+        # Treating as Choice is the requested behavior.
+        
+        # We need to assign probabilities. Default to uniform.
+        root.add_children(nodes)
+        return root, True
 
     return list(htn_graph.nodes)[0], True
 
@@ -134,17 +184,18 @@ def action_graph_to_htn_naive(action_graph):
     return list(htn_graph.nodes)[0], True
     
 def visualize_with_graphviz_dot(digraph, file_name):
-    digraph.graph['node']={'ordering':'out'}
+    if shutil.which('dot') is None:
+        print("graphviz 'dot' command not found, skipping visualization.")
+        return
+
+    digraph.graph['node'] = {'ordering': 'out'}
     G = nx.nx_pydot.to_pydot(digraph)
 
-    # for node in G.get_nodes():
-    #     node.set_ordering("out")
-    # G.set_node_defaults(style="filled", fillcolor="yellow")
-    # print(G)
-    # G.write_png('test.png')
-
     nx.drawing.nx_pydot.write_dot(digraph, file_name + ".dot")
-    check_call(['dot', '-Tpng', file_name + '.dot', '-o', file_name + '.png'])
+    try:
+        check_call(['dot', '-Tpng', file_name + '.dot', '-o', file_name + '.png'])
+    except Exception as e:
+        print(f"graphviz visualization failed: {e}")
     
 def hardcoded_example():
     demos = [['pickup_plate', 'place_plate', 'pickup_banana', 'place_banana', 'pickup_orange', 'place_orange', 'pickup_cup', 'place_cup', 'pickup_knife', 'place_knife', 'pickup_spoon', 'place_spoon', 'pickup_bottle', 'pour_water', 'place_bottle', 'pickup_cube', 'place_cube'],

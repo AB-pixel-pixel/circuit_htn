@@ -1,0 +1,74 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>HTN Visualization</title>
+    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <style type="text/css">
+        body { margin: 0; padding: 0; overflow: hidden; }
+        #mynetwork {
+            width: 100vw;
+            height: 100vh;
+            border: 1px solid lightgray;
+        }
+        #controls {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 100;
+            background: white;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+<div id="controls">
+    <h3>HTN Visualization</h3>
+    <p>Scroll to zoom, drag to move.</p>
+    <button onclick="network.fit()">Fit All</button>
+</div>
+<div id="mynetwork"></div>
+<script type="text/javascript">
+    var nodes = new vis.DataSet([{"id": 0, "label": "SEQ\nS0", "shape": "diamond", "color": "#FB7E81", "title": "S0 (sequence)"}, {"id": 1, "label": "1 - grab_tools1\n[grab_tools1]", "shape": "box", "color": "#7BE141", "title": "1 - grab_tools1 [grab_tools1]"}, {"id": 2, "label": "CHOICE\nC0", "shape": "triangle", "color": "#FFA807", "title": "C0 (choice)"}, {"id": 3, "label": "8 - hold_for_robot2\n[hold_for_robot2]", "shape": "box", "color": "#7BE141", "title": "8 - hold_for_robot2 [hold_for_robot2]"}, {"id": 4, "label": "SEQ\nS2", "shape": "diamond", "color": "#FB7E81", "title": "S2 (sequence)"}, {"id": 5, "label": "SEQ\nS1", "shape": "diamond", "color": "#FB7E81", "title": "S1 (sequence)"}, {"id": 6, "label": "2 - attach_shell1\n[attach_shell1]", "shape": "box", "color": "#7BE141", "title": "2 - attach_shell1 [attach_shell1]"}, {"id": 7, "label": "3 - screw1\n[screw1]", "shape": "box", "color": "#7BE141", "title": "3 - screw1 [screw1]"}, {"id": 8, "label": "4 - hold_for_robot1\n[hold_for_robot1]", "shape": "box", "color": "#7BE141", "title": "4 - hold_for_robot1 [hold_for_robot1]"}, {"id": 9, "label": "5 - grab_tools2\n[grab_tools2]", "shape": "box", "color": "#7BE141", "title": "5 - grab_tools2 [grab_tools2]"}, {"id": 10, "label": "6 - attach_shell2\n[attach_shell2]", "shape": "box", "color": "#7BE141", "title": "6 - attach_shell2 [attach_shell2]"}, {"id": 11, "label": "7 - screw2\n[screw2]", "shape": "box", "color": "#7BE141", "title": "7 - screw2 [screw2]"}, {"id": 12, "label": "10 - grab_tools2\n[grab_tools2]", "shape": "box", "color": "#7BE141", "title": "10 - grab_tools2 [grab_tools2]"}, {"id": 13, "label": "11 - attach_shell1\n[attach_shell1]", "shape": "box", "color": "#7BE141", "title": "11 - attach_shell1 [attach_shell1]"}, {"id": 14, "label": "12 - attach_shell2\n[attach_shell2]", "shape": "box", "color": "#7BE141", "title": "12 - attach_shell2 [attach_shell2]"}, {"id": 15, "label": "13 - screw1\n[screw1]", "shape": "box", "color": "#7BE141", "title": "13 - screw1 [screw1]"}, {"id": 16, "label": "14 - screw2\n[screw2]", "shape": "box", "color": "#7BE141", "title": "14 - screw2 [screw2]"}, {"id": 17, "label": "15 - hold_for_robot1\n[hold_for_robot1]", "shape": "box", "color": "#7BE141", "title": "15 - hold_for_robot1 [hold_for_robot1]"}]);
+    var edges = new vis.DataSet([{"from": 0, "to": 1, "arrows": "to", "label": "1", "font": {"align": "top"}}, {"from": 0, "to": 2, "arrows": "to", "label": "2", "font": {"align": "top"}}, {"from": 0, "to": 3, "arrows": "to", "label": "3", "font": {"align": "top"}}, {"from": 2, "to": 4, "arrows": "to", "label": "0.50", "font": {"align": "top"}}, {"from": 2, "to": 5, "arrows": "to", "label": "0.50", "font": {"align": "top"}}, {"from": 4, "to": 6, "arrows": "to", "label": "1", "font": {"align": "top"}}, {"from": 4, "to": 7, "arrows": "to", "label": "2", "font": {"align": "top"}}, {"from": 4, "to": 8, "arrows": "to", "label": "3", "font": {"align": "top"}}, {"from": 4, "to": 9, "arrows": "to", "label": "4", "font": {"align": "top"}}, {"from": 4, "to": 10, "arrows": "to", "label": "5", "font": {"align": "top"}}, {"from": 4, "to": 11, "arrows": "to", "label": "6", "font": {"align": "top"}}, {"from": 5, "to": 12, "arrows": "to", "label": "1", "font": {"align": "top"}}, {"from": 5, "to": 13, "arrows": "to", "label": "2", "font": {"align": "top"}}, {"from": 5, "to": 14, "arrows": "to", "label": "3", "font": {"align": "top"}}, {"from": 5, "to": 15, "arrows": "to", "label": "4", "font": {"align": "top"}}, {"from": 5, "to": 16, "arrows": "to", "label": "5", "font": {"align": "top"}}, {"from": 5, "to": 17, "arrows": "to", "label": "6", "font": {"align": "top"}}]);
+
+    var container = document.getElementById('mynetwork');
+    var data = {
+        nodes: nodes,
+        edges: edges
+    };
+    var options = {
+        layout: {
+            hierarchical: {
+                direction: "UD",
+                sortMethod: "directed",
+                nodeSpacing: 150,
+                levelSeparation: 150,
+                blockShifting: true,
+                edgeMinimization: true,
+                parentCentralization: true,
+                shakeTowards: 'roots'
+            }
+        },
+        physics: {
+            enabled: false
+        },
+        edges: {
+            smooth: {
+                type: 'cubicBezier',
+                forceDirection: 'vertical',
+                roundness: 0.4
+            }
+        },
+        interaction: {
+            dragNodes: false,
+            dragView: true,
+            zoomView: true
+        }
+    };
+    var network = new vis.Network(container, data, options);
+</script>
+</body>
+</html>

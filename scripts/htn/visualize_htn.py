@@ -189,21 +189,17 @@ def generate_html(nodes, edges, output_file):
         f.write(html_content)
     print(f"Visualization saved to {output_file}")
 
-if __name__ == "__main__":
-    pkl_file = 'alfred_htn.pkl'
-    if len(sys.argv) > 1:
-        pkl_file = sys.argv[1]
-        
+def visualize_htn_from_pkl(pkl_file):
     if not os.path.exists(pkl_file):
         print(f"File {pkl_file} not found.")
-        sys.exit(1)
+        return
         
     print(f"Loading {pkl_file}...")
     try:
         root = load_htn(pkl_file)
     except Exception as e:
         print(f"Error loading pickle: {e}")
-        sys.exit(1)
+        return
     
     print("Converting to network format...")
     nodes, edges = htn_to_visjs(root)
@@ -211,3 +207,11 @@ if __name__ == "__main__":
     
     output_html = os.path.splitext(pkl_file)[0] + '.html'
     generate_html(nodes, edges, output_html)
+
+
+if __name__ == "__main__":
+    pkl_file = "domain_knowledge/alfred_htn_带变量.pkl" # 'alfred_htn.pkl'
+    if len(sys.argv) > 1:
+        pkl_file = sys.argv[1]
+        
+    visualize_htn_from_pkl(pkl_file)

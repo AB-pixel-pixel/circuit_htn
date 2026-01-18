@@ -27,6 +27,7 @@ if scripts_dir not in sys.path:
 try:
     from circuitHTN import generate_action_graphs_from_demonstrations, action_graph_to_htn, convertToCircuitHTN, visualize_with_graphviz_dot
     from htn import convertToDiGraph
+    from visualize_htn import visualize_htn_from_pkl
 except ImportError as e:
     print(f"导入模块失败: {e}")
     print(f"sys.path: {sys.path}")
@@ -52,9 +53,9 @@ def get_alfred_demonstrations(train_dir, num_demos=50):
         for filename in filenames:
             if filename == 'traj_data.json':
                 files.append(os.path.join(root, filename))
-                if len(files) >= num_demos:
+                if num_demos > 0 and len(files) >= num_demos:
                     break
-        if len(files) >= num_demos:
+        if num_demos > 0 and len(files) >= num_demos:
             break
             
     print(f"找到了 {len(files)} 条轨迹数据。")
@@ -92,10 +93,28 @@ def get_alfred_demonstrations(train_dir, num_demos=50):
                 args = discrete_action.get('args', [])
                 
                 # 格式化动作字符串
+                # 泛化处理：解析参数，只保留物体类型，去除实例 ID
+                # 在 ALFRED 中，args 通常已经是小写的物体类型 (例如 "butterknife")，但也可能包含 ID
+                # 即使包含 ID (如 "butterknife|123")，我们也可以通过分割 "|" 来去除
+                
+                clean_args = []
+                for arg in args:
+                    str_arg = str(arg)
+                    # 如果参数包含 '|'，通常是 object_id (Type|X|Y|Z)，取第一部分作为类型
+                    if '|' in str_arg:
+                         clean_arg = str_arg.split('|')[0]
+                    else:
+                         clean_arg = str_arg
+                    
+                    # 统一转为小写，并去除可能存在的数字后缀 (如 Apple_1 -> Apple)
+                    # 注意：ALFRED high_pddl 中的 args 通常已经是干净的类型名 (如 "butterknife")
+                    # 但为了保险起见，我们还是做一下处理
+                    clean_arg = clean_arg.split('_')[0].lower()
+                    clean_args.append(clean_arg)
+
                 full_action = action_name
-                if args:
-                    str_args = [str(arg) for arg in args]
-                    full_action += "_" + "_".join(str_args)
+                if clean_args:
+                    full_action += "_" + "_".join(clean_args)
                 
                 # 生成唯一的虚拟状态
                 # 格式: state_{demo_id}_{step_index}
@@ -117,19 +136,30 @@ def get_alfred_demonstrations(train_dir, num_demos=50):
 
     return paths
 
+import config # 导入配置
+
 def main():
     # ALFRED 数据集路径
-    alfred_train_dir = "/Users/ab/Code/construct_domain_knowledge/alfred/data/json_2.1.0/train"
+    # 使用配置文件中的路径，如果存在 train 子目录则使用，否则使用配置的根目录
+    alfred_train_dir = os.path.join(config.ALFRED_DATA_PATH, "train")
+    if not os.path.exists(alfred_train_dir):
+        print(f"Warning: {alfred_train_dir} does not exist. Using {config.ALFRED_DATA_PATH} instead.")
+        alfred_train_dir = config.ALFRED_DATA_PATH
     
     # 获取命令行参数中的演示数量
-    num_demos = 50
+    num_demos = -1 # Default to all if not specified, or use -1 to explicit all
     if len(sys.argv) > 1:
         try:
             num_demos = int(sys.argv[1])
         except ValueError:
-            print("警告: 无效的参数，使用默认值 50")
+            print("警告: 无效的参数，使用默认值 -1 (全部)")
             
-    print(f"开始读取 ALFRED 演示数据 (目标数量: {num_demos})...")
+    if num_demos == -1:
+        target_str = "全部"
+    else:
+        target_str = str(num_demos)
+
+    print(f"开始读取 ALFRED 演示数据 (目标数量: {target_str})...")
     paths = get_alfred_demonstrations(alfred_train_dir, num_demos=num_demos)
     
     if not paths:
@@ -155,19 +185,44 @@ def main():
     if result:
         print("HTN 构建成功！")
         
-        print("正在可视化 HTN (保存为 alfred_htn.png)...")
-        try:
-            htn_digraph = convertToDiGraph(built_htn)
-            visualize_with_graphviz_dot(htn_digraph, 'alfred_htn')
-        except Exception as e:
-            print(f"可视化 HTN 失败: {e}")
+        # print("正在可视化 HTN (保存为 alfred_htn.png)...")
+        # try:
+        #     htn_digraph = convertToDiGraph(built_htn)
+        #     visualize_with_graphviz_dot(htn_digraph, 'alfred_htn')
+        # except Exception as e:
+        #     print(f"可视化 HTN 失败: {e}")
         
-        print("正在将 HTN 保存到 alfred_htn.pkl...")
-        # 保存为 pickle 文件
+        # Generate versioned filename
+        base_name = "alfred_htn"
+        output_dir = "domain_knowledge"
+        
+        # Find next version
+        existing_files = glob.glob(os.path.join(output_dir, f"{base_name}_*.pkl"))
+        max_version = 0
+        for f in existing_files:
+            try:
+                # Expected format: alfred_htn_001.pkl
+                fname = os.path.basename(f)
+                version_part = fname.replace(f"{base_name}_", "").replace(".pkl", "")
+                if version_part.isdigit():
+                    v = int(version_part)
+                    if v > max_version:
+                        max_version = v
+            except:
+                pass
+        
+        next_version = max_version + 1
+        pkl_filename = f"{base_name}_{next_version:03d}.pkl"
+        pkl_path = os.path.join(output_dir, pkl_filename)
+
+        print(f"正在将 HTN 保存到 {pkl_path}")
         circuitHTN = convertToCircuitHTN(built_htn)
-        with open('alfred_htn.pkl', 'wb') as f:
+        with open(pkl_path, 'wb') as f:
             pickle.dump(circuitHTN, f, 2) # 使用协议 2 以兼容旧版本 Python（如果需要）
-            
+        
+        print("正在生成 HTN 可视化 HTML...")
+        visualize_htn_from_pkl(pkl_path)
+
         print("完成。")
     else:
         print("HTN 构建失败。可能是无法进一步规约图形。")

@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """
 Resolves the "bad graph" scenario
+解决“坏图”场景（即无法直接通过简单的串行/并行合并规则归约的图结构）。
+这通常涉及到图的重构和展开。
 """
 import numpy as np
 from copy import deepcopy
@@ -10,6 +12,10 @@ from htn import *
 #from test_code import *
 
 def bfs_search(G, node_start):
+    """
+    广度优先搜索 (BFS)，计算节点的层级（level）和父节点（parent）。
+    用于确定节点在图中的深度和拓扑关系。
+    """
     level = {node_start:0}
     parent = {node_start:[None]}
     i=1
@@ -31,6 +37,10 @@ def bfs_search(G, node_start):
     return level, parent
 
 def reach_terminate_node(G, node_start, node_terminate):
+    """
+    检查从 node_start 是否可以到达 node_terminate。
+    用于验证图的连通性。
+    """
     flag = 0
     level = {node_start:0}
     parent = {node_start:None}
@@ -55,9 +65,15 @@ def reach_terminate_node(G, node_start, node_terminate):
         return False
 
 def least_common_successor(G, node1, node2, node_start, node_terminate):
+    """
+    寻找 node1 和 node2 的“最小公共后继”（Least Common Successor, LCS）。
+    LCS 是两个分支路径汇合的地方。
+    算法通过随机游走寻找候选，并验证在移除该节点后是否会阻断到达终止节点的路径（即该节点是否是必经之路）。
+    """
     node1_set = set()
     node2_set = set()
     
+    # 从 node1 随机游走收集后继
     node = node1
     while(sum(1 for _ in G.successors(node))!=0):
         successors_node_1 = [s for s in G.successors(node)]
@@ -65,6 +81,7 @@ def least_common_successor(G, node1, node2, node_start, node_terminate):
         node = successors_node_1[node_id]
         node1_set.add(node)
     
+    # 从 node2 随机游走收集后继
     node = node2
     while(sum(1 for _ in G.successors(node))!=0):
         successors_node_2 = [s for s in G.successors(node)]
@@ -72,9 +89,11 @@ def least_common_successor(G, node1, node2, node_start, node_terminate):
         node = successors_node_2[node_id]
         node2_set.add(node)
     
+    # 找交集
     intersection_set_total = node1_set.intersection(node2_set)
     intersection_set_constrained = set()
     
+    # 验证交集中的节点是否是必经之路（即移除后是否阻断路径）
     for element in intersection_set_total:
         G_temp = deepcopy(G)
         try:
@@ -85,11 +104,14 @@ def least_common_successor(G, node1, node2, node_start, node_terminate):
         flag_1 = reach_terminate_node(G_temp, node1, node_terminate)
         flag_2 = reach_terminate_node(G_temp, node2, node_terminate)
         
+        # 如果移除 element 后，node1 和 node2 都无法到达终点，则该 element 是关键节点
         if(flag_1 == False and flag_2 == False):
             intersection_set_constrained.add(element)
     
+    # 在所有关键节点中，找到层级最低（最浅）的那个
     level, parent = bfs_search(G, node_start)
     lowest_level = float('inf')
+    reconv_node = None # 初始化
     for reconv_node_temp in intersection_set_constrained:
         if level[reconv_node_temp]<lowest_level:
             lowest_level = level[reconv_node_temp]
@@ -97,6 +119,9 @@ def least_common_successor(G, node1, node2, node_start, node_terminate):
     return reconv_node
 
 def find_choices(G, node, node_start, node_terminate, choices, parent):
+    """
+    递归查找图中的分支结构，识别潜在的 Choice 节点及其汇合点 (LCS)。
+    """
     for child_node in G.neighbors(node):
         if child_node not in parent:
             for second_child_node in G.neighbors(node):
@@ -107,6 +132,9 @@ def find_choices(G, node, node_start, node_terminate, choices, parent):
             find_choices(G, child_node, node_start, node_terminate, choices, parent)
 
 def group_choices(choices, level):
+    """
+    对找到的选择结构进行分组和排序。
+    """
     ## order the choices
     final_choices = set()
     for t in choices:
@@ -147,6 +175,9 @@ def group_choices(choices, level):
     return modified_final_choices
 
 def return_choices(G, node_start, node_terminate):
+    """
+    主入口函数：返回图中所有的选择结构。
+    """
     ## bfs levels
     level, _ = bfs_search(G, node_start)
     
@@ -174,6 +205,7 @@ def return_choices(G, node_start, node_terminate):
 def checkSubgraph(G, start_node, end_node, start_successors):
     '''
     Check if a set of LCS nodes and paths comprise a reducible subgraph
+    检查一组 LCS 节点和路径是否构成一个可归约的子图。
 
     params:
         G : the full task graph
@@ -224,6 +256,8 @@ def checkSubgraph(G, start_node, end_node, start_successors):
 def expandGraph(G, start_node, end_node, start_successors):
     '''
     Replace a subgraph with an expanded subgraph that can be resolved further with sequence/parallel rules
+    用一个扩展的子图替换原子图，使其可以通过串行/并行规则进一步解析。
+    这通常涉及复制节点以消除非结构化的依赖。
 
     params:
         G : the full task graph (this will be modified with the result)
@@ -236,6 +270,7 @@ def expandGraph(G, start_node, end_node, start_successors):
 
     middle_nodes = []
     i = 1
+    # 为每个分支创建独立的路径（复制中间节点）
     for n in start_successors:
         node_name = deepcopy(n)
         node_name.change_name(node_name.get_name() + '-' + str(i))
@@ -282,6 +317,7 @@ def expandGraph(G, start_node, end_node, start_successors):
 #        print(type(edge[1]))
 #        print(G2.get_edge_data(edge[0], edge[1])['prob'])
 
+    # 替换原图中的节点和边
     G.remove_nodes_from(middle_nodes)
     G.add_nodes_from(list(G2.nodes))
     for edge in G2.edges:
@@ -301,6 +337,10 @@ def sort_subgraphs(subgraphs):
     
 
 def restructure_htn_graph(htn_graph, node_start, node_terminate):
+    """
+    重构 HTN 图的入口函数。
+    寻找可归约的子图并进行扩展。
+    """
     subgraphs = []
     for candidate_subgraph in return_choices(htn_graph, node_start, node_terminate):
         each_subgraph = []
@@ -311,29 +351,14 @@ def restructure_htn_graph(htn_graph, node_start, node_terminate):
             subgraphs.append(each_subgraph)
     
     subgraphs = sort_subgraphs(deepcopy(subgraphs))
-    smallest_candidate_subgraph = subgraphs[0][0]
-    new_G = expandGraph(htn_graph, smallest_candidate_subgraph[0], smallest_candidate_subgraph[2], smallest_candidate_subgraph[1])        
-    return new_G
+    if len(subgraphs) > 0:
+        smallest_candidate_subgraph = subgraphs[0][0]
+        new_G = expandGraph(htn_graph, smallest_candidate_subgraph[0], smallest_candidate_subgraph[2], smallest_candidate_subgraph[1])        
+        return new_G
+    return htn_graph # 如果没有找到可归约的子图，返回原图
             
             
 if __name__=="__main__":
-    htn = salad_demonstrations_to_htn() 
-    for action in htn.nodes:
-        action_name = action.get_name()
-        print(action_name)
-        if action_name.find('init_action') != -1:
-            node_start = action
-        elif action.name.find('term_action') != -1:
-            node_terminate = action
-        elif action_name.find('S25') != -1:
-            action_check1 = action
-        elif action_name.find('S6') != -1:
-            action_check2 = action
-        elif action_name.find('S35') != -1:
-            action_check3 = action
-        elif action_name.find('S26') != -1:
-            action_check4 = action
-        elif action_name.find('C0') != -1:
-            action_check5 = action
-    expandGraph(htn, node_start, node_terminate, [action_check2, action_check1, action_check5])
-    
+    # htn = salad_demonstrations_to_htn() # This function is not defined in this file context, commenting out
+    # Placeholder for main execution logic if needed
+    pass
