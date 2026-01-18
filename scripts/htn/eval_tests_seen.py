@@ -8,6 +8,7 @@ from collections import defaultdict
 import openai
 import inspect
 import difflib
+import time
 
 # Setup paths
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -149,12 +150,28 @@ def evaluate():
     
     test_dir = os.path.join(config.ALFRED_DATA_PATH, "tests_seen")
     traj_files = glob.glob(os.path.join(test_dir, "**", "traj_data.json"), recursive=True)
-    traj_files = traj_files[:10] 
+    
+    # Use fixed seed to select random 30
+    random.seed(42)
+    # Filter files first to ensure consistent sorting before shuffle
+    traj_files.sort()
+    
+    # Select 30 random files if possible, else all
+    sample_size = 30
+    if len(traj_files) > sample_size:
+        traj_files = random.sample(traj_files, sample_size)
+    else:
+        print(f"Warning: Only found {len(traj_files)} files, using all.")
+    
+    print(f"Selected {len(traj_files)} trajectories for evaluation.")
     
     available_tasks = get_available_tasks_info()
     planner = LLMPlanner() if USE_LLM else HeuristicPlanner()
     
     stats = {'total': 0, 'planned': 0, 'failed': 0}
+    timing_stats = []
+    
+    start_total_time = time.time()
     
     for i, fpath in enumerate(traj_files):
         print(f"\n--- Task {i}: {os.path.basename(os.path.dirname(fpath))} ---")
@@ -169,53 +186,74 @@ def evaluate():
         instruction = traj['turk_annotations']['anns'][0]['task_desc']
         print(f"Instruction: {instruction}")
         
+        # Timing Plan + HTN
+        t0 = time.time()
+        
         task_name, args = planner.plan(instruction, state, available_tasks, objects)
+        
+        t_plan_end = time.time()
+        
+        plan_result = "FAIL"
         
         if not task_name:
             print("Planner failed to produce a task.")
             stats['failed'] += 1
-            continue
-            
-        # Fuzzy match task name
-        corrected_name = get_closest_task(task_name, available_tasks)
-        if corrected_name and corrected_name != task_name:
-            print(f"Corrected task name '{task_name}' to '{corrected_name}'")
-            task_name = corrected_name
-            
-        if not task_name or task_name not in available_tasks:
-            print(f"Planner failed: Invalid task '{task_name}'")
-            stats['failed'] += 1
-            continue
-
-        print(f"Planner proposed: {task_name}")
-        print(f"Args ({len(args)}): {args}")
-        
-        expected_count = available_tasks.get(task_name, 0)
-        if len(args) != expected_count:
-            print(f"Warning: Expected {expected_count} args, got {len(args)}. Padding/Truncating...")
-            if len(args) < expected_count:
-                args += ['None'] * (expected_count - len(args))
-            else:
-                args = args[:expected_count]
-        
-        try:
-            full_args = ['agent'] + args
-            gtpyhop.verbose = 0
-            plan = gtpyhop.find_plan(state, [(task_name, *full_args)])
-            
-            if plan:
-                print(f"HTN Plan Found: {len(plan)} steps")
-                stats['planned'] += 1
-            else:
-                print("HTN failed to find a plan (Preconditions or method failure).")
-                stats['failed'] += 1
+        else:
+            # Fuzzy match task name
+            corrected_name = get_closest_task(task_name, available_tasks)
+            if corrected_name and corrected_name != task_name:
+                print(f"Corrected task name '{task_name}' to '{corrected_name}'")
+                task_name = corrected_name
                 
-        except Exception as e:
-            print(f"Execution Error: {e}")
-            stats['failed'] += 1
-            
+            if not task_name or task_name not in available_tasks:
+                print(f"Planner failed: Invalid task '{task_name}'")
+                stats['failed'] += 1
+            else:
+                print(f"Planner proposed: {task_name}")
+                # print(f"Args ({len(args)}): {args}")
+                
+                expected_count = available_tasks.get(task_name, 0)
+                if len(args) != expected_count:
+                    # print(f"Warning: Expected {expected_count} args, got {len(args)}. Padding/Truncating...")
+                    if len(args) < expected_count:
+                        args += ['None'] * (expected_count - len(args))
+                    else:
+                        args = args[:expected_count]
+                
+                try:
+                    full_args = ['agent'] + args
+                    gtpyhop.verbose = 0
+                    plan = gtpyhop.find_plan(state, [(task_name, *full_args)])
+                    
+                    if plan:
+                        print(f"HTN Plan Found: {len(plan)} steps")
+                        stats['planned'] += 1
+                        plan_result = "SUCCESS"
+                    else:
+                        print("HTN failed to find a plan (Preconditions or method failure).")
+                        stats['failed'] += 1
+                        
+                except Exception as e:
+                    print(f"Execution Error: {e}")
+                    stats['failed'] += 1
+        
+        t_end = time.time()
+        duration = t_end - t0
+        timing_stats.append(duration)
+        print(f"Task Duration: {duration:.4f}s ({plan_result})")
+
+    end_total_time = time.time()
+    total_duration = end_total_time - start_total_time
+    avg_time = sum(timing_stats) / len(timing_stats) if timing_stats else 0
+    
     print("\n=== Summary ===")
-    print(stats)
+    print(f"Total Tasks: {stats['total']}")
+    print(f"Success: {stats['planned']}")
+    print(f"Failed: {stats['failed']}")
+    print(f"Success Rate: {stats['planned']/stats['total']*100:.1f}%")
+    print("-" * 20)
+    print(f"Total Time: {total_duration:.2f}s")
+    print(f"Avg Time per Task: {avg_time:.4f}s")
 
 if __name__ == "__main__":
     evaluate()

@@ -1,0 +1,399 @@
+ export ENABLE_LLM=false && python scripts/htn/eval_tests_seen.py
+
+Imported GTPyhop version 1.0.
+Messages from find_plan will be prefaced with 'FP>'.
+Messages from run_lazy_lookahead will be prefaced with 'RLL>'.
+=== Evaluating TESTS_SEEN (Mode: Heuristic) ===
+Selected 30 trajectories for evaluation.
+
+--- Task 0: trial_T20190909_013350_472755 ---
+Instruction: Put two bottles of nail polish in a cupboard.
+Heuristic planner cannot handle complex argument mapping without NLP.
+Planner failed to produce a task.
+Task Duration: 0.0000s (FAIL)
+
+--- Task 1: trial_T20190907_025942_948698 ---
+Instruction: Frying an apple on the stove. 
+Heuristic planner cannot handle complex argument mapping without NLP.
+Planner failed to produce a task.
+Task Duration: 0.0000s (FAIL)
+
+--- Task 2: trial_T20190906_193833_823990 ---
+Instruction: place a pan with a knife in it in front of the coffee maker
+Heuristic planner cannot handle complex argument mapping without NLP.
+Planner failed to produce a task.
+Task Duration: 0.0000s (FAIL)
+
+--- Task 3: trial_T20190909_055700_408074 ---
+Instruction: Put a wash cloth in the sink.
+Heuristic planner cannot handle complex argument mapping without NLP.
+Planner failed to produce a task.
+Task Duration: 0.0000s (FAIL)
+
+--- Task 4: trial_T20190907_210644_547725 ---
+Instruction: Put a clean apple in the refrigerator.
+Heuristic planner cannot handle complex argument mapping without NLP.
+Planner failed to produce a task.
+Task Duration: 0.0000s (FAIL)
+
+--- Task 5: trial_T20190907_165415_289495 ---
+Instruction: Use the lamp to see the tennis racket.
+Heuristic planner cannot handle complex argument mapping without NLP.
+Planner failed to produce a task.
+Task Duration: 0.0000s (FAIL)
+
+--- Task 6: trial_T20190907_155441_973789 ---
+Instruction: Move two newspapers to the coffee table.
+Heuristic planner cannot handle complex argument mapping without NLP.
+Planner failed to produce a task.
+Task Duration: 0.0000s (FAIL)
+
+--- Task 7: trial_T20190907_051429_475883 ---
+Instruction: Put a chilled pot on the stove. 
+Heuristic planner cannot handle complex argument mapping without NLP.
+Planner failed to produce a task.
+Task Duration: 0.0000s (FAIL)
+
+--- Task 8: trial_T20190909_055132_256725 ---
+Instruction: throw away two spray bottles into the garbage can
+Heuristic planner cannot handle complex argument mapping without NLP.
+Planner failed to produce a task.
+Task Duration: 0.0000s (FAIL)
+
+--- Task 9: trial_T20190907_014614_905434 ---
+Instruction: Put the chilled pan on the back of the stove. 
+Heuristic planner cannot handle complex argument mapping without NLP.
+Planner failed to produce a task.
+Task Duration: 0.0000s (FAIL)
+
+--- Task 10: trial_T20190909_033722_340857 ---
+Instruction: Put a clean head of lettuce in the garbage.
+Heuristic planner cannot handle complex argument mapping without NLP.
+Planner failed to produce a task.
+Task Duration: 0.0000s (FAIL)
+
+--- Task 11: trial_T20190911_124548_591659 ---
+Instruction: To cool a bread slice and place it in the fridge.
+Heuristic planner cannot handle complex argument mapping without NLP.
+Planner failed to produce a task.
+Task Duration: 0.0000s (FAIL)
+
+--- Task 12: trial_T20190908_175218_818728 ---
+Instruction: Place a wet rag in the bath tub.
+Heuristic planner cannot handle complex argument mapping without NLP.
+Planner failed to produce a task.
+Task Duration: 0.0000s (FAIL)
+
+--- Task 13: trial_T20190907_000105_330254 ---
+Instruction: Put a head of lettuce on the counter.
+Heuristic planner cannot handle complex argument mapping without NLP.
+Planner failed to produce a task.
+Task Duration: 0.0000s (FAIL)
+
+--- Task 14: trial_T20190908_230638_121501 ---
+Instruction: Move a salt shaker to the drawer
+Heuristic planner cannot handle complex argument mapping without NLP.
+Planner failed to produce a task.
+Task Duration: 0.0000s (FAIL)
+
+--- Task 15: trial_T20190908_100949_012440 ---
+Instruction: Examine the pencil by the light
+Heuristic planner cannot handle complex argument mapping without NLP.
+Planner failed to produce a task.
+Task Duration: 0.0000s (FAIL)
+
+--- Task 16: trial_T20190906_200445_365117 ---
+Instruction: turn on a lamp while holding a white plate
+Heuristic planner cannot handle complex argument mapping without NLP.
+Planner failed to produce a task.
+Task Duration: 0.0000s (FAIL)
+
+--- Task 17: trial_T20190906_200329_245495 ---
+Instruction: Place the toilet plunger in the cabinet below the sink.
+Heuristic planner cannot handle complex argument mapping without NLP.
+Planner failed to produce a task.
+Task Duration: 0.0000s (FAIL)
+
+--- Task 18: trial_T20190907_002848_074445 ---
+Instruction: Place a chilled glass bottle onto the kitchen counter.
+Heuristic planner cannot handle complex argument mapping without NLP.
+Planner failed to produce a task.
+Task Duration: 0.0000s (FAIL)
+
+--- Task 19: trial_T20190907_153919_635668 ---
+Instruction: Put the clean spatula in the drawer. 
+Heuristic planner cannot handle complex argument mapping without NLP.
+Planner failed to produce a task.
+Task Duration: 0.0000s (FAIL)
+
+--- Task 20: trial_T20190907_163216_451970 ---
+Instruction: Put a pot with a knife in it in the sink.
+Heuristic planner cannot handle complex argument mapping without NLP.
+Planner failed to produce a task.
+Task Duration: 0.0000s (FAIL)
+
+--- Task 21: trial_T20190908_135834_396351 ---
+Instruction: Put a warm slice of bread in the garbage.
+Heuristic planner cannot handle complex argument mapping without NLP.
+Planner failed to produce a task.
+Task Duration: 0.0000s (FAIL)
+
+--- Task 22: trial_T20190908_235346_227372 ---
+Instruction: Grab the pencil from the desk and turn the light on over it.
+Heuristic planner cannot handle complex argument mapping without NLP.
+Planner failed to produce a task.
+Task Duration: 0.0000s (FAIL)
+
+--- Task 23: trial_T20190906_194056_557446 ---
+Instruction: place a box with a credit card in it on top of the couch
+Heuristic planner cannot handle complex argument mapping without NLP.
+Planner failed to produce a task.
+Task Duration: 0.0000s (FAIL)
+
+--- Task 24: trial_T20190908_200539_115276 ---
+Instruction: Slice a potato, put it into the pot and place the pot into the fridge.
+Heuristic planner cannot handle complex argument mapping without NLP.
+Planner failed to produce a task.
+Task Duration: 0.0000s (FAIL)
+
+--- Task 25: trial_T20190907_143200_617478 ---
+Instruction: Put the cell phone in the bowl on the desk.
+Heuristic planner cannot handle complex argument mapping without NLP.
+Planner failed to produce a task.
+Task Duration: 0.0000s (FAIL)
+
+--- Task 26: trial_T20190909_043249_705441 ---
+Instruction: Put the pan with ladle on the counter
+Heuristic planner cannot handle complex argument mapping without NLP.
+Planner failed to produce a task.
+Task Duration: 0.0000s (FAIL)
+
+--- Task 27: trial_T20190909_014719_569668 ---
+Instruction: Put a warm mug in the cupboard.
+Heuristic planner cannot handle complex argument mapping without NLP.
+Planner failed to produce a task.
+Task Duration: 0.0000s (FAIL)
+
+--- Task 28: trial_T20190909_041707_562433 ---
+Instruction: Put two CD's in a drawer.
+Heuristic planner cannot handle complex argument mapping without NLP.
+Planner failed to produce a task.
+Task Duration: 0.0000s (FAIL)
+
+--- Task 29: trial_T20190908_093943_381070 ---
+Instruction: Put a heated slice of potato on the black table. 
+Heuristic planner cannot handle complex argument mapping without NLP.
+Planner failed to produce a task.
+Task Duration: 0.0000s (FAIL)
+
+=== Summary ===
+Total Tasks: 30
+Success: 0
+Failed: 30
+Success Rate: 0.0%
+--------------------
+Total Time: 0.01s
+Avg Time per Task: 0.0000s
+
+
+
+export ENABLE_LLM=true && python scripts/htn/eval_tests_seen.py
+
+Imported GTPyhop version 1.0.
+Messages from find_plan will be prefaced with 'FP>'.
+Messages from run_lazy_lookahead will be prefaced with 'RLL>'.
+=== Evaluating TESTS_SEEN (Mode: LLM) ===
+Selected 30 trajectories for evaluation.
+
+--- Task 0: trial_T20190909_013350_472755 ---
+Instruction: Put two bottles of nail polish in a cupboard.
+Planner proposed: Task_GotoLocation_PickupObject_GotoLocation_PutObject_1_1_1_2
+HTN Plan Found: 4 steps
+Task Duration: 2.9934s (SUCCESS)
+
+--- Task 1: trial_T20190907_025942_948698 ---
+Instruction: Frying an apple on the stove. 
+Corrected task name 'Task_GotoLocation_PickupObject_GotoLocation_HeatObject_GotoLocation_PutObject_1_1_1_1_2' to 'Task_GotoLocation_PickupObject_GotoLocation_HeatObject_GotoLocation_PutObject_1_1_1_1_1_2'
+Planner proposed: Task_GotoLocation_PickupObject_GotoLocation_HeatObject_GotoLocation_PutObject_1_1_1_1_1_2
+HTN failed to find a plan (Preconditions or method failure).
+Task Duration: 1.9807s (FAIL)
+
+--- Task 2: trial_T20190906_193833_823990 ---
+Instruction: place a pan with a knife in it in front of the coffee maker
+Planner proposed: Task_GotoLocation_PickupObject_GotoLocation_PutObject_PickupObject_GotoLocation_PutObject_1_1_1_2_1_1_2
+HTN failed to find a plan (Preconditions or method failure).
+Task Duration: 2.3321s (FAIL)
+
+--- Task 3: trial_T20190909_055700_408074 ---
+Instruction: Put a wash cloth in the sink.
+Planner proposed: Task_GotoLocation_PickupObject_GotoLocation_PutObject_1_1_1_2
+HTN failed to find a plan (Preconditions or method failure).
+Task Duration: 1.4084s (FAIL)
+
+--- Task 4: trial_T20190907_210644_547725 ---
+Instruction: Put a clean apple in the refrigerator.
+Planner proposed: Task_GotoLocation_PickupObject_GotoLocation_CleanObject_GotoLocation_PutObject_1_1_1_1_1_2
+HTN Plan Found: 6 steps
+Task Duration: 2.2427s (SUCCESS)
+
+--- Task 5: trial_T20190907_165415_289495 ---
+Instruction: Use the lamp to see the tennis racket.
+Planner proposed: Task_GotoLocation_ToggleObject_PickupObject_1_1_1
+HTN Plan Found: 3 steps
+Task Duration: 1.7459s (SUCCESS)
+
+--- Task 6: trial_T20190907_155441_973789 ---
+Instruction: Move two newspapers to the coffee table.
+Planner proposed: Task_GotoLocation_PickupObject_GotoLocation_PutObject_PickupObject_GotoLocation_PutObject_1_1_1_2_1_1_2
+HTN Plan Found: 7 steps
+Task Duration: 1.7898s (SUCCESS)
+
+--- Task 7: trial_T20190907_051429_475883 ---
+Instruction: Put a chilled pot on the stove. 
+Planner proposed: Task_GotoLocation_PickupObject_GotoLocation_CoolObject_GotoLocation_PutObject_1_1_1_1_1_2
+HTN failed to find a plan (Preconditions or method failure).
+Task Duration: 1.7996s (FAIL)
+
+--- Task 8: trial_T20190909_055132_256725 ---
+Instruction: throw away two spray bottles into the garbage can
+Planner proposed: Task_GotoLocation_PickupObject_GotoLocation_PutObject_1_1_1_2
+HTN Plan Found: 4 steps
+Task Duration: 1.6920s (SUCCESS)
+
+--- Task 9: trial_T20190907_014614_905434 ---
+Instruction: Put the chilled pan on the back of the stove. 
+Planner proposed: Task_GotoLocation_PickupObject_GotoLocation_PutObject_1_1_1_2
+HTN failed to find a plan (Preconditions or method failure).
+Task Duration: 1.5824s (FAIL)
+
+--- Task 10: trial_T20190909_033722_340857 ---
+Instruction: Put a clean head of lettuce in the garbage.
+Planner proposed: Task_GotoLocation_PickupObject_GotoLocation_PutObject_1_1_1_2
+HTN Plan Found: 4 steps
+Task Duration: 1.7051s (SUCCESS)
+
+--- Task 11: trial_T20190911_124548_591659 ---
+Instruction: To cool a bread slice and place it in the fridge.
+Planner proposed: Task_GotoLocation_PickupObject_GotoLocation_CoolObject_GotoLocation_PutObject_1_1_1_1_1_2
+HTN failed to find a plan (Preconditions or method failure).
+Task Duration: 1.5714s (FAIL)
+
+--- Task 12: trial_T20190908_175218_818728 ---
+Instruction: Place a wet rag in the bath tub.
+Planner proposed: Task_GotoLocation_PickupObject_PutObject_1_1_2
+HTN failed to find a plan (Preconditions or method failure).
+Task Duration: 1.6345s (FAIL)
+
+--- Task 13: trial_T20190907_000105_330254 ---
+Instruction: Put a head of lettuce on the counter.
+Planner proposed: Task_GotoLocation_PickupObject_PutObject_1_1_2
+HTN Plan Found: 3 steps
+Task Duration: 2.1470s (SUCCESS)
+
+--- Task 14: trial_T20190908_230638_121501 ---
+Instruction: Move a salt shaker to the drawer
+Planner proposed: Task_GotoLocation_PickupObject_PutObject_1_1_2
+HTN Plan Found: 3 steps
+Task Duration: 2.1657s (SUCCESS)
+
+--- Task 15: trial_T20190908_100949_012440 ---
+Instruction: Examine the pencil by the light
+Planner proposed: _verify_mg
+Execution Error: vars() argument must have __dict__ attribute
+Task Duration: 1.4005s (FAIL)
+
+--- Task 16: trial_T20190906_200445_365117 ---
+Instruction: turn on a lamp while holding a white plate
+Planner proposed: Task_GotoLocation_ToggleObject_PickupObject_1_1_1
+HTN Plan Found: 3 steps
+Task Duration: 2.0606s (SUCCESS)
+
+--- Task 17: trial_T20190906_200329_245495 ---
+Instruction: Place the toilet plunger in the cabinet below the sink.
+Corrected task name 'Task_GotoLocation_PickupObject_GotoLocation_PutObject_1_1_2' to 'Task_GotoLocation_PickupObject_GotoLocation_PutObject_1_1_1_2'
+Planner proposed: Task_GotoLocation_PickupObject_GotoLocation_PutObject_1_1_1_2
+HTN Plan Found: 4 steps
+Task Duration: 2.0197s (SUCCESS)
+
+--- Task 18: trial_T20190907_002848_074445 ---
+Instruction: Place a chilled glass bottle onto the kitchen counter.
+Planner proposed: Task_GotoLocation_PickupObject_GotoLocation_CoolObject_GotoLocation_PutObject_1_1_1_1_1_2
+HTN failed to find a plan (Preconditions or method failure).
+Task Duration: 2.0944s (FAIL)
+
+--- Task 19: trial_T20190907_153919_635668 ---
+Instruction: Put the clean spatula in the drawer. 
+Planner proposed: Task_GotoLocation_PickupObject_GotoLocation_PutObject_1_1_1_2
+HTN failed to find a plan (Preconditions or method failure).
+Task Duration: 1.7622s (FAIL)
+
+--- Task 20: trial_T20190907_163216_451970 ---
+Instruction: Put a pot with a knife in it in the sink.
+Planner proposed: Task_GotoLocation_PickupObject_PutObject_1_1_2
+HTN failed to find a plan (Preconditions or method failure).
+Task Duration: 2.4018s (FAIL)
+
+--- Task 21: trial_T20190908_135834_396351 ---
+Instruction: Put a warm slice of bread in the garbage.
+Planner proposed: Task_GotoLocation_PickupObject_HeatObject_GotoLocation_PutObject_1_1_1_1_2
+HTN failed to find a plan (Preconditions or method failure).
+Task Duration: 1.9586s (FAIL)
+
+--- Task 22: trial_T20190908_235346_227372 ---
+Instruction: Grab the pencil from the desk and turn the light on over it.
+Planner proposed: Task_GotoLocation_ToggleObject_PickupObject_1_1_1
+HTN Plan Found: 3 steps
+Task Duration: 1.9221s (SUCCESS)
+
+--- Task 23: trial_T20190906_194056_557446 ---
+Instruction: place a box with a credit card in it on top of the couch
+Planner proposed: Task_GotoLocation_PickupObject_GotoLocation_PutObject_PickupObject_PutObject_1_1_1_2_1_2
+HTN failed to find a plan (Preconditions or method failure).
+Task Duration: 3.4052s (FAIL)
+
+--- Task 24: trial_T20190908_200539_115276 ---
+Instruction: Slice a potato, put it into the pot and place the pot into the fridge.
+Corrected task name 'Task_GotoLocation_PickupObject_GotoLocation_SliceObject_GotoLocation_PutObject_1_1_1_1_2' to 'Task_GotoLocation_PickupObject_GotoLocation_CleanObject_GotoLocation_PutObject_1_1_1_1_1_2'
+Planner proposed: Task_GotoLocation_PickupObject_GotoLocation_CleanObject_GotoLocation_PutObject_1_1_1_1_1_2
+HTN failed to find a plan (Preconditions or method failure).
+Task Duration: 2.2273s (FAIL)
+
+--- Task 25: trial_T20190907_143200_617478 ---
+Instruction: Put the cell phone in the bowl on the desk.
+Planner proposed: Task_GotoLocation_PickupObject_GotoLocation_PutObject_1_1_1_2
+HTN failed to find a plan (Preconditions or method failure).
+Task Duration: 1.6262s (FAIL)
+
+--- Task 26: trial_T20190909_043249_705441 ---
+Instruction: Put the pan with ladle on the counter
+Planner proposed: Task_GotoLocation_PickupObject_PutObject_1_1_2
+HTN failed to find a plan (Preconditions or method failure).
+Task Duration: 1.3693s (FAIL)
+
+--- Task 27: trial_T20190909_014719_569668 ---
+Instruction: Put a warm mug in the cupboard.
+Planner proposed: Task_GotoLocation_PickupObject_HeatObject_GotoLocation_PutObject_1_1_1_1_2
+HTN failed to find a plan (Preconditions or method failure).
+Task Duration: 1.6344s (FAIL)
+
+--- Task 28: trial_T20190909_041707_562433 ---
+Instruction: Put two CD's in a drawer.
+Corrected task name 'Task_GotoLocation_PickupObject_GotoLocation_PutObject_PickupObject_PutObject_1_1_2_1_2' to 'Task_GotoLocation_PickupObject_GotoLocation_PutObject_PickupObject_PutObject_1_1_1_2_1_2'
+Planner proposed: Task_GotoLocation_PickupObject_GotoLocation_PutObject_PickupObject_PutObject_1_1_1_2_1_2
+HTN Plan Found: 6 steps
+Task Duration: 2.0626s (SUCCESS)
+
+--- Task 29: trial_T20190908_093943_381070 ---
+Instruction: Put a heated slice of potato on the black table. 
+Planner proposed: Task_GotoLocation_PickupObject_HeatObject_GotoLocation_PutObject_1_1_1_1_2
+HTN failed to find a plan (Preconditions or method failure).
+Task Duration: 1.8387s (FAIL)
+
+=== Summary ===
+Total Tasks: 30
+Success: 12
+Failed: 18
+Success Rate: 40.0%
+--------------------
+Total Time: 58.61s
+Avg Time per Task: 1.9525s
