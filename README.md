@@ -1,3 +1,16 @@
+# Construct Domain Knowledge
+
+## 演示原始数据集中的PDDL动作执行情况
+
+process_traj.py 可以演示原始数据集中的PDDL动作执行情况。
+在视频中发现pick_up动作缺失以及会有动作失败 。 视频路径在alfred_data/train_full
+但是还没有检查代码它是从哪里挑动作执行的。
+
+
+
+
+
+
 # CircuitHTN Codebase
 Repository to host software libraries for task models for human-robot collaboration. All CircuitHTN code is located in the `scripts` directory. CircuitHTN is a Hierarchical Task Network learning approach inspired from resistor reduction rules in elementary physics. Humans demonstrations are first collected to build an Action Graph representing the state action transitions. The graph needs to be reduced to discover potential action hierarchies and structure. The graph is reduced by alternating series-parallel resistor reduction and restructuring the graph to resolve ambiguities.
 

@@ -156,10 +156,13 @@ class TaskGameStateFullKnowledge(TaskGameState):
                     (len(self.knife_obj) == 0 or cls not in self.knife_obj)):
                 continue
 
-            nearest_point = self.object_to_point[obj_id]
-            object_nearest_point_strs.append('(objectAtLocation %s loc|%d|%d|%d|%d)' % (
-                obj_id,
-                nearest_point[0], nearest_point[1], nearest_point[2], nearest_point[3]))
+            try:
+                nearest_point = self.object_to_point[obj_id]
+                object_nearest_point_strs.append('(objectAtLocation %s loc|%d|%d|%d|%d)' % (
+                    obj_id,
+                    nearest_point[0], nearest_point[1], nearest_point[2], nearest_point[3]))
+            except KeyError:
+                print(f"Warning: Object {obj_id} not in object_to_point")
 
         object_at_location_str = '\n        '.join(object_nearest_point_strs)
 
@@ -272,12 +275,13 @@ class TaskGameStateFullKnowledge(TaskGameState):
                 should_fail = True
 
             action = {
-                'action': 'Teleport',
+                'action': 'TeleportFull',
                 'x': point_x * constants.AGENT_STEP_SIZE,
                 'y': self.agent_height,
                 'z': point_z * constants.AGENT_STEP_SIZE,
-                'rotateOnTeleport': True,
-                'rotation': action['rotation'],
+                'rotation': dict(x=0, y=action['rotation'], z=0),
+                'standing': True,
+                'forceAction': True
             }
 
         elif ((action['action'] == 'OpenObject' or action['action'] == 'CloseObject') and
@@ -298,38 +302,38 @@ class TaskGameStateFullKnowledge(TaskGameState):
             else:
                 should_fail = True
         elif (action['action'] == 'OpenObject' and 'objectId' in action):
-            action['forceVisible'] = forceVisible
+            action['forceAction'] = True
             should_fail = False
         elif action['action'] == 'CloseObject':
             if len(self.currently_opened_object_ids) > 0:
                 action['objectId'] = self.currently_opened_object_ids.get_any()
-                action['forceVisible'] = forceVisible
+                action['forceAction'] = True
             else:
                 should_fail = True
         elif (action['action'] == 'ToggleObject' and 'objectId' in action):
-            action['forceVisible'] = forceVisible
+            action['forceAction'] = True
             should_fail = False
         elif (action['action'] == 'SliceObject' and 'objectId' in action):
-            action['forceVisible'] = forceVisible
+            action['forceAction'] = True
             should_fail = False
         elif action['action'] == 'PickupObject':
             should_fail = False
-            action['forceVisible'] = forceVisible
+            action['forceAction'] = True
         elif action['action'] == 'PutObject':
             if len(self.inventory_ids) == 0:
                 should_fail = True
             else:
                 action['objectId'] = self.inventory_ids.get_any()
-                action['forceVisible'] = forceVisible
+                action['forceAction'] = True
                 should_fail = False
         elif action['action'] == 'CleanObject':
             action['objectId'] = action['receptacleObjectId']
             action['cleanObjectId'] = action['objectId']
-            action['forceVisible'] = forceVisible
+            action['forceAction'] = True
             should_fail = False
         elif action['action'] in {'HeatObject', 'CoolObject'}:
             action['objectId'] = action['receptacleObjectId']
-            action['forceVisible'] = forceVisible
+            action['forceAction'] = True
             should_fail = False
         return action, should_fail
 
@@ -436,8 +440,11 @@ class TaskGameStateFullKnowledge(TaskGameState):
 
                 if not parent['openable'] or parent['isOpen']:
                     parent_receptacle = parent['objectId']
+                    if parent_receptacle not in self.in_receptacle_ids:
+                        self.in_receptacle_ids[parent_receptacle] = set()
                     self.in_receptacle_ids[parent_receptacle].add(obj_id)
-                    self.object_to_point[obj_id] = self.receptacle_to_point[parent_receptacle]
-                    self.point_to_object[tuple(self.receptacle_to_point[parent_receptacle].tolist())] = obj_id
+                    if parent_receptacle in self.receptacle_to_point:
+                        self.object_to_point[obj_id] = self.receptacle_to_point[parent_receptacle]
+                        self.point_to_object[tuple(self.receptacle_to_point[parent_receptacle].tolist())] = obj_id
 
         self.need_plan_update = True

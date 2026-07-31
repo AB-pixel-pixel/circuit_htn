@@ -781,12 +781,14 @@ class GameStateBase(object):
                 if np.min(point_dists) > 0.0001:
                     print('Point teleport failure')
                     self.event = self.env.step({
-                        'action': 'Teleport',
+                        'action': 'TeleportFull',
                         'x': start_pose[0] * constants.AGENT_STEP_SIZE,
                         'y': self.agent_height,
                         'z': start_pose[1] * constants.AGENT_STEP_SIZE,
-                        'rotateOnTeleport': True,
-                        'rotation': new_pose[2] * 90,
+                        'rotation': dict(x=0, y=new_pose[2] * 90, z=0),
+                        'horizon': self.event.metadata['agent']['cameraHorizon'],
+                        'standing': True,
+                        'forceAction': True
                     })
                     self.env.last_event.metadata['lastActionSuccess'] = False
 

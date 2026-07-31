@@ -376,14 +376,16 @@ class PlannedGameState(GameStateBase, ABC):
 
     def get_teleport_action(self, action):
         nearest_point = tuple(map(int, action['location'].split('|')[1:]))
-        next_action = {'action': 'TeleportFull',
-                       'x': nearest_point[0] * constants.AGENT_STEP_SIZE,
-                       'y': self.agent_height,
-                       'z': nearest_point[1] * constants.AGENT_STEP_SIZE,
-                       'rotateOnTeleport': True,
-                       'rotation': nearest_point[2] * 90,
-                       'horizon': nearest_point[3]
-                       }
+        next_action = {
+            'action': 'TeleportFull',
+            'x': nearest_point[0] * constants.AGENT_STEP_SIZE,
+            'y': self.agent_height,
+            'z': nearest_point[1] * constants.AGENT_STEP_SIZE,
+            'rotation': dict(x=0, y=nearest_point[2] * 90, z=0),
+            'horizon': nearest_point[3],
+            'standing': True,
+            'forceAction': True
+        }
         return next_action
 
     def get_plan_action(self, action):

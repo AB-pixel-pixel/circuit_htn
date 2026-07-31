@@ -194,9 +194,9 @@ class PlanParser(object):
     def __init__(self, domain_file_path):
         self.domain = domain_file_path
         self.problem_id = -1
-        self.process_pool = multiprocessing.Pool(3)
-        #from multiprocessing.pool import ThreadPool
-        #self.process_pool = ThreadPool(3)
+        # self.process_pool = multiprocessing.Pool(3)
+        from multiprocessing.pool import ThreadPool
+        self.process_pool = ThreadPool(3)
 
     def get_plan(self):
         parsed_plans = self.process_pool.map(get_plan_async, zip([self.domain] * 3, [self.problem_id] * 3, range(3, 6)))

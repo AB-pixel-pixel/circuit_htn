@@ -42,7 +42,7 @@ def multireplace(string, replacements):
 
 class SetWithGet(set):
     def get_any(self):
-        return random.sample(self, 1)[0]
+        return random.sample(sorted(list(self)), 1)[0]
 
     def __getitem__(self, item):
         return self.get_any()

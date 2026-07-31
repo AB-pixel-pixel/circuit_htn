@@ -1,2 +1,7 @@
 *.pyc
 .DS_Store
+alfred_data/
+/logs_gen_process
+/gen_pddl_states
+/.ai2thor
+.DS_Store

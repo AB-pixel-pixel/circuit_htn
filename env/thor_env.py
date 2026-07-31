@@ -100,7 +100,8 @@ class ThorEnv(Controller):
         restore object locations and states
         恢复对象位置和状态
         '''
-        super().step(dict(
+        '''
+        init_action = dict(
             action='Initialize',
             gridSize=constants.AGENT_STEP_SIZE / constants.RECORD_SMOOTHING_FACTOR,
             cameraY=constants.CAMERA_HEIGHT_OFFSET,
@@ -110,18 +111,54 @@ class ThorEnv(Controller):
             renderObjectImage=constants.RENDER_OBJECT_IMAGE,
             visibility_distance=constants.VISIBILITY_DISTANCE,
             makeAgentsVisible=False,
-        ))
+        )
+        if seed is not None:
+            init_action['randomSeed'] = seed
+            
+        super().step(init_action)
+        '''
         if len(object_toggles) > 0:
-            super().step((dict(action='SetObjectToggles', objectToggles=object_toggles)))
+            # print(f"DEBUG: object_toggles={object_toggles}")
+            for toggle in object_toggles:
+                 # toggle is {'objectType': '...', 'isOn': True/False}
+                 target_type = toggle['objectType']
+                 is_on = toggle['isOn']
+                 action_name = 'ToggleObjectOn' if is_on else 'ToggleObjectOff'
+                 
+                 # Find all objects of this type
+                 objects = game_util.get_objects_of_type(target_type, self.last_event.metadata)
+                 for obj in objects:
+                     super().step(dict(action=action_name, objectId=obj['objectId'], forceAction=True))
 
         if dirty_and_empty:
-            super().step(dict(action='SetStateOfAllObjects',
+            self.step(dict(action='SetStateOfAllObjects',
                                StateChange="CanBeDirty",
                                forceAction=True))
-            super().step(dict(action='SetStateOfAllObjects',
+            self.step(dict(action='SetStateOfAllObjects',
                                StateChange="CanBeFilled",
                                forceAction=False))
-        super().step((dict(action='SetObjectPoses', objectPoses=object_poses)))
+        # super().step((dict(action='SetObjectPoses', objectPoses=object_poses)))
+
+    def handle_set_state_of_all_objects(self, action):
+        '''
+        Handle the custom SetStateOfAllObjects action manually since it is not supported in newer AI2-THOR.
+        '''
+        state_change = action.get('StateChange')
+        event = self.last_event
+        
+        if state_change == 'CanBeDirty':
+            # make everything dirty
+            for obj in event.metadata['objects']:
+                if obj.get('dirtyable'):
+                     super().step(dict(action='DirtyObject', objectId=obj['objectId'], forceAction=True))
+        
+        elif state_change == 'CanBeFilled':
+             # empty out fillable things
+             for obj in event.metadata['objects']:
+                if obj.get('fillable'):
+                    super().step(dict(action='EmptyObject', objectId=obj['objectId'], forceAction=True))
+        
+        return self.last_event
 
     def set_task(self, traj, args, reward_type='sparse', max_episode_length=2000):
         '''
@@ -136,6 +173,12 @@ class ThorEnv(Controller):
         overrides ai2thor.controller.Controller.step() for smooth navigation and goal_condition updates
         重写 ai2thor.controller.Controller.step() 以实现平滑导航和目标条件更新
         '''
+        if isinstance(action, str):
+            return super().step(action, **kwargs)
+
+        if isinstance(action, dict) and action.get('action') == 'SetStateOfAllObjects':
+            return self.handle_set_state_of_all_objects(action)
+
         if smooth_nav:
             if "MoveAhead" in action['action']:
                 self.smooth_move_ahead(action)
